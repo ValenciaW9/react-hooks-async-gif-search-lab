@@ -1,109 +1,94 @@
-# Async Giphy Search Lab
+# Putting it All Together: Components and Props
 
-## Instructions
+## Learning Goals
 
-You're going to be building out a Gif search using the Giphy API. In this lab,
-there are no tests to pass. Rather, your task is to create a working app in your
-browser using the instructions below. When finished, you should have an
-application that can take in a user's input, fetch JSON data from the Giphy API,
-and display the results.
+- Create components that return JSX
+- Use props to make components dynamic
+- Transform lists of data into lists of components
 
-![giphy search](https://curriculum-content.s3.amazonaws.com/phase-2/react-hooks-async-gif-search-lab/async.gif)
+## Overview
 
-## Getting Started
+Now that you've learned how to work with components in React, it's time to build
+something and put those skills to use! Your goal for this lab is to make a
+_static site_ in React to practice building components, writing JSX, and passing
+down data as props.
 
-The URL for the API is
+We'll be creating a personal blog site, similar to
+[Dan Abramov's Overreacted](https://overreacted.io/):
 
-`https://api.giphy.com/v1/gifs/search?q=YOUR QUERY HERE&api_key=dc6zaTOxFJmzC&rating=g`
+![demo](https://curriculum-content.s3.amazonaws.com/phase-2/react-hooks-component-props-mini-project/demo.png)
 
-While the above API key _may_ work, we recommend creating your own API key by
-following the [instructions on Giphy's developer site][create_key]. Creating a
-key is free and only requires an account. Using your own key will prevent any
-potential rate limiting if other students are also working on this lesson.
+There is some starter code available in `src/components/App.js`. There is also
+some data in `data/blog.js` that is being imported into `App` so you can pass it
+down to the components that need it.
 
-[create_key]: https://developers.giphy.com/docs/api/#quick-start-guide
+## Deliverables
 
-Once you've got your key, you should be able to access the Giphy API from a
-browser and receive a JSON response to confirm everything is working.
+Have a look at the components below and draw out a component hierarchy so you
+can determine how to pass data down as props.
 
-`https://api.giphy.com/v1/gifs/search?q=dolphin&api_key=YOUR API KEY&rating=g`
+### Header
 
-You should get back an array of objects, each containing information about a
-particular image.
+Make a `Header` component as a child of `App`. It should return:
 
-```js
-  "data": [
-    {
-      "type": "gif",
-      "id": "l0HlNQ03J5JxX6lva",
-      "slug": "bbc-wildlife-l0HlNQ03J5JxX6lva",
-      "url": "https://giphy.com/gifs/bbc-wildlife-l0HlNQ03J5JxX6lva",
-      "bitly_gif_url": "https://gph.is/2iC32M8",
-      "bitly_url": "https://gph.is/2iC32M8",
+- a `<header>` element with the following elements inside:
+  - an `<h1>` with the name of the blog, passed as a prop called `name`
 
-      ...
+### About
 
-      "images": {
-        "fixed_height_still": {
-          "url": "https://media0.giphy.com/media/l0HlNQ03J5JxX6lva/200_s.gif?cid=e1bb72ff5b9fa2866168584b51f13892",
-          "width": "400",
-          "height": "200",
-          "size": "55556"
-        },
-        ...
-        "original": {
-          "url": "https://media0.giphy.com/media/l0HlNQ03J5JxX6lva/giphy.gif?cid=e1bb72ff5b9fa2866168584b51f13892",
-          "width": "480",
-          "height": "240",
-        }
-        ...
-      }
-    }
-    ]
-```
+Make an `About` component as a child of `App`. It should return:
 
-**Note:** Notice there are many URL keys on each image object. The first `url`
-key, just below `type`, `id`, and `slug`, will bring you to the images page on
-[giphy.com](https://giphy.com/). We only want the path to the actual image,
-which is found at `images.original.url`. Using other `url` keys may cause CORS
-issues.
+- an `<aside>` element with the following elements inside:
+  - an `<img>` element, with the `src` set to an image passed as a prop called
+    `image`
+  - the `<img>` element should use this placeholder image as a _default value_
+    for the prop if no prop is passed in: "https://via.placeholder.com/215"
+  - the image should also be accessible! Give it an `alt` attribute of "blog
+    logo"
+  - a `<p>` element, with the text for the blog passed in as a prop called
+    `about`
 
-## Your Components
+### ArticleList
 
-### App
+Make an `ArticleList` component as a child of `App`. It should return:
 
-Your top level component will be the `App` component - no surprises there!
-It will be responsible for rendering the `NavBar` component (this component
-is already provided for you, note the project has bootstrap loaded in) and the
-`GifListContainer` component.
+- a `<main>` element with the following components inside:
+  - an array of `Article` components (one component for each of the `posts`
+    passed down as props to `ArticleList`)
+  - make sure to assign a unique `key` attribute to each `Article`
 
-### GifListContainer
+### Article
 
-`GifListContainer` should be a component that does data fetching and then
-renders its corresponding sub-component. That’s it.
+Make an `Article` component as a child of `ArticleList`. It should return:
 
-In our app, the `GifListContainer` will be responsible for fetching the data
-from the Giphy API, storing the first 3 gifs from the response in its component
-**state**, and passing that data down to its child, the `GifList` component,
-as a prop.
+- an `<article>` element, with the following elements inside:
+  - an `<h3>` element displaying the title of the article, passed as a prop
+    called `title`
+  - a `<small>` element displaying the date of the article, passed as a prop
+    called `date`
+    - a _default value_ of "January 1, 1970" should be used if no date is passed
+      as a prop
+  - a `<p>` element displaying the preview of the article, passed as a prop
+    called `preview`
 
-It will also render a `GifSearch` component that renders the form.
-`GifListContainer` should pass down a submit handler function to
-`GifSearch` as a prop.
+### Bonus Feature: 'Minutes to Read'
 
-### GifList
+You'll notice in the original [Overreacted](https://overreacted.io/) site,
+there's a 'minutes to read' indicator next to each article.
 
-`GifList` receives data from its props and renders html given the input
-data. It can render a top level `<ul>` with each gif as an `<li>`.
+If the article takes less than 30 minutes to read:
 
-### GifSearch
+- For every 5 minutes (rounded up to the nearest 5), display a coffee cup emoji.
+  For example, if the article takes 3 minutes to read, you should display "☕️ 3
+  min read". If the article takes 7 minute, you should display "☕️☕️ 7 min
+  read".
 
-The `GifSearch` component will render a form that receives the user input
-for the Giphy search. The text input should be a _controlled component_ that
-stores the value of the input in its component state and renders the DOM
-accordingly. The React component is always in charge of what the DOM looks like.
+If the article takes 30 minutes or longer to read:
 
-`GifSearch` should receive a callback prop from its parent. On a submit
-event, it should invoke that callback prop with the value of the text input. It
-is this callback function, defined in `GifListContainer`, that will actually
-query the API with the text the user has entered.
+- For every 10 minutes (rounded up to the nearest 10), display a bento box
+  emoji. For example, if the article takes 35 minutes to read, you should
+  display "🍱🍱🍱🍱 35 min read". If the article takes 61 minutes to read, you
+  should display "🍱🍱🍱🍱🍱🍱🍱 61 min read".
+
+There aren't tests for this feature, so you'll have to rely on running the code
+in the browser to see if your implementation works!
